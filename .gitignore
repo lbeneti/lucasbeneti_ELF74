@@ -1,0 +1,8 @@
+settings
+Debug
+ewarm
+
+*.o
+*.a
+*.bin
+*.map

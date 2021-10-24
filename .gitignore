@@ -6,3 +6,6 @@ ewarm
 *.a
 *.bin
 *.map
+driverlib
+inc
+blinky

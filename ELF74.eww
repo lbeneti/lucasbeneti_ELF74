@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspace>
+    <project>
+        <path>$WS_DIR$\blinky\blinky.ewp</path>
+    </project>
+    <project>
+        <path>$WS_DIR$\driverlib\driverlib.ewp</path>
+    </project>
+    <project>
+        <path>$WS_DIR$\Lab1\lab1.ewp</path>
+    </project>
+    <project>
+        <path>$WS_DIR$\Lab2\Lab2.ewp</path>
+    </project>
+    <project>
+        <path>$WS_DIR$\Lab3\Lab3.ewp</path>
+    </project>
+    <project>
+        <path>$WS_DIR$\Lab4\Lab4.ewp</path>
+    </project>
+    <batchBuild />
+</workspace>

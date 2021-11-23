@@ -36,6 +36,8 @@
             <file>$PROJ_DIR$\Debug\Obj\Source\tx_initialize_low_level.o.rsp</file>
             <file>$PROJ_DIR$\sample_threadx.c</file>
             <file>$PROJ_DIR$\Debug\Obj\Source\cstartup_M.o</file>
+            <file>$PROJ_DIR$\..\..\ThreadX\common\src\txe_queue_send.c</file>
+            <file>$PROJ_DIR$\..\..\ThreadX\common\src\tx_queue_receive.c</file>
         </outputs>
         <file>
             <name>[ROOT_NODE]</name>

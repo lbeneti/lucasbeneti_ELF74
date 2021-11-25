@@ -1,65 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
     <fileVersion>5</fileVersion>
-    <fileChecksum>2999535836</fileChecksum>
+    <fileChecksum>3394481828</fileChecksum>
     <configuration>
         <name>Debug</name>
         <outputs>
-            <file>$TOOLKIT_DIR$\lib\dl7M_tln.a</file>
-            <file>$TOOLKIT_DIR$\lib\m7M_tls.a</file>
-            <file>$PROJ_DIR$\Debug\List\Lab5.map</file>
-            <file>$TOOLKIT_DIR$\lib\shb_l.a</file>
-            <file>$TOOLKIT_DIR$\lib\rt7M_tl.a</file>
-            <file>$PROJ_DIR$\..\..\ThreadX\common\inc\tx_api.h</file>
             <file>$TOOLKIT_DIR$\inc\c\string.h</file>
             <file>$TOOLKIT_DIR$\inc\c\aarch32\intrinsics.h</file>
-            <file>$TOOLKIT_DIR$\inc\c\stdlib.h</file>
-            <file>$TOOLKIT_DIR$\inc\c\DLib_Product_stdlib.h</file>
-            <file>$TOOLKIT_DIR$\inc\c\ycheck.h</file>
             <file>$TOOLKIT_DIR$\inc\c\DLib_Config_Normal.h</file>
-            <file>$TOOLKIT_DIR$\inc\c\DLib_Defaults.h</file>
-            <file>$TOOLKIT_DIR$\inc\c\aarch32\iar_intrinsics_common.h</file>
-            <file>$TOOLKIT_DIR$\inc\c\aarch32\iccarm_builtin.h</file>
             <file>$TOOLKIT_DIR$\inc\c\ysizet.h</file>
+            <file>$PROJ_DIR$\Debug\Obj\Source\cstartup_M.o.rsp</file>
+            <file>$PROJ_DIR$\Debug\Obj\Source\cstartup_M.o</file>
+            <file>$PROJ_DIR$\cstartup_M.s</file>
+            <file>$TOOLKIT_DIR$\lib\m7M_tls.a</file>
+            <file>$TOOLKIT_DIR$\lib\dl7M_tln.a</file>
+            <file>$TOOLKIT_DIR$\inc\c\aarch32\iar_intrinsics_common.h</file>
             <file>$TOOLKIT_DIR$\inc\c\yvals.h</file>
             <file>$PROJ_DIR$\..\..\ThreadX\ports\cortex_m4\iar\inc\tx_port.h</file>
-            <file>$TOOLKIT_DIR$\config\linker\TexasInstruments\TM4C1294NC.icf</file>
-            <file>$TOOLKIT_DIR$\inc\c\DLib_Product.h</file>
+            <file>$PROJ_DIR$\..\..\ThreadX\common\inc\tx_api.h</file>
+            <file>$TOOLKIT_DIR$\lib\shb_l.a</file>
             <file>$TOOLKIT_DIR$\inc\c\DLib_Product_string.h</file>
-            <file>$PROJ_DIR$\cstartup_M.s</file>
-            <file>$PROJ_DIR$\..\..\ThreadX\ports\cortex_m4\iar\example_build\Debug\Exe\tx.a</file>
-            <file>$PROJ_DIR$\Debug\Obj\Source\sample_threadx.o</file>
             <file>$PROJ_DIR$\tx_initialize_low_level.s</file>
-            <file>$PROJ_DIR$\Debug\Obj\Source\tx_initialize_low_level.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\Source\cstartup_M.o.rsp</file>
-            <file>$PROJ_DIR$\Debug\Exe\Lab5.out</file>
-            <file>$PROJ_DIR$\Debug\Obj\Source\tx_initialize_low_level.o.rsp</file>
+            <file>$TOOLKIT_DIR$\inc\c\DLib_Defaults.h</file>
+            <file>$TOOLKIT_DIR$\inc\c\ycheck.h</file>
+            <file>$PROJ_DIR$\Debug\List\Lab5.map</file>
+            <file>$TOOLKIT_DIR$\inc\c\stdlib.h</file>
+            <file>$PROJ_DIR$\..\..\ThreadX\ports\cortex_m4\iar\example_build\Debug\Exe\tx.a</file>
             <file>$PROJ_DIR$\sample_threadx.c</file>
-            <file>$PROJ_DIR$\Debug\Obj\Source\cstartup_M.o</file>
-            <file>$PROJ_DIR$\..\..\ThreadX\common\src\txe_queue_send.c</file>
-            <file>$PROJ_DIR$\..\..\ThreadX\common\src\tx_queue_receive.c</file>
+            <file>$TOOLKIT_DIR$\lib\rt7M_tl.a</file>
+            <file>$TOOLKIT_DIR$\lib\th7M_tln.a</file>
+            <file>$TOOLKIT_DIR$\inc\c\DLib_Product_stdlib.h</file>
+            <file>$PROJ_DIR$\Debug\Obj\Source\tx_initialize_low_level.o.rsp</file>
+            <file>$PROJ_DIR$\Debug\Obj\Source\sample_threadx.o</file>
+            <file>$PROJ_DIR$\Debug\Exe\Lab5.out</file>
+            <file>$PROJ_DIR$\Debug\Obj\Source\tx_initialize_low_level.o</file>
+            <file>$TOOLKIT_DIR$\inc\c\DLib_Product.h</file>
+            <file>$TOOLKIT_DIR$\inc\c\aarch32\iccarm_builtin.h</file>
+            <file>$PROJ_DIR$\sample_threadx.icf</file>
         </outputs>
-        <file>
-            <name>[ROOT_NODE]</name>
-            <outputs>
-                <tool>
-                    <name>ILINK</name>
-                    <file> 27 2</file>
-                </tool>
-            </outputs>
-        </file>
         <file>
             <name>$PROJ_DIR$\cstartup_M.s</name>
             <outputs>
                 <tool>
                     <name>AARM</name>
-                    <file> 30</file>
+                    <file> 5</file>
                 </tool>
             </outputs>
             <inputs>
                 <tool>
                     <name>AARM</name>
-                    <file> 26</file>
+                    <file> 4</file>
                 </tool>
             </inputs>
         </file>
@@ -68,13 +58,28 @@
             <outputs>
                 <tool>
                     <name>AARM</name>
-                    <file> 25</file>
+                    <file> 28</file>
                 </tool>
             </outputs>
             <inputs>
                 <tool>
                     <name>AARM</name>
-                    <file> 28</file>
+                    <file> 25</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\sample_threadx.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 26</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 2 16 29 24 14 9 30 1 19 0 17 3 10 12 11</file>
                 </tool>
             </inputs>
         </file>
@@ -83,39 +88,25 @@
             <outputs>
                 <tool>
                     <name>ILINK</name>
-                    <file> 2</file>
+                    <file> 18</file>
                 </tool>
             </outputs>
             <inputs>
                 <tool>
                     <name>ILINK</name>
-                    <file> 18 0 1 4 3 22 30 23 25</file>
+                    <file> 8 7 22 13 23 20 5 26 28 31</file>
                 </tool>
             </inputs>
         </file>
         <file>
-            <name>$PROJ_DIR$\sample_threadx.c</name>
+            <name>[ROOT_NODE]</name>
             <outputs>
                 <tool>
-                    <name>ICCARM</name>
-                    <file> 23</file>
+                    <name>ILINK</name>
+                    <file> 27 18</file>
                 </tool>
             </outputs>
-            <inputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 11 12 19 9 20 13 14 7 8 6 10 15 16 5 17</file>
-                </tool>
-            </inputs>
         </file>
-        <forcedrebuild>
-            <name>$PROJ_DIR$\sample_threadx.c</name>
-            <tool>ICCARM</tool>
-        </forcedrebuild>
-        <forcedrebuild>
-            <name>[MULTI_TOOL]</name>
-            <tool>ILINK</tool>
-        </forcedrebuild>
         <forcedrebuild>
             <name>[REBUILD_ALL]</name>
         </forcedrebuild>

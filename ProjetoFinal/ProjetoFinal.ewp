@@ -82,7 +82,7 @@
                 </option>
                 <option>
                     <name>GEndianModeBE</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>OGBufferedTerminalOutput</name>
@@ -99,7 +99,7 @@
                 <option>
                     <name>GBECoreSlave</name>
                     <version>30</version>
-                    <state>39</state>
+                    <state>38</state>
                 </option>
                 <option>
                     <name>OGUseCmsis</name>
@@ -180,7 +180,7 @@
                 </option>
                 <option>
                     <name>DSPExtension</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>TrustZone</name>
@@ -685,7 +685,7 @@
                 </option>
                 <option>
                     <name>IlinkOutputFile</name>
-                    <state>Lab5.out</state>
+                    <state>ProjetoFinal.out</state>
                 </option>
                 <option>
                     <name>IlinkDebugInfoEnable</name>
@@ -982,7 +982,7 @@
                 </option>
                 <option>
                     <name>IlinkTrustzoneImportLibraryOut</name>
-                    <state>Lab5_import_lib.o</state>
+                    <state>ProjetoFinal_import_lib.o</state>
                 </option>
                 <option>
                     <name>OILinkExtraOption</name>

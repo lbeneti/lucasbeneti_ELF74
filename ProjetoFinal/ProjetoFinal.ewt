@@ -2854,6 +2854,9 @@
             <name>$PROJ_DIR$\cstartup_M.s</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\mainv2.c</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\sample_threadx.c</name>
         </file>
         <file>

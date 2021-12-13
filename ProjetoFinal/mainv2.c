@@ -14,8 +14,8 @@
 
 #define BYTE_POOL_SIZE__ 9120
 #define STACK_SIZE__ 1024
-#define QUEUE_MSG_SIZE__ TX_4_ULONG
-#define QUEUE_MSG_COUNT__ 4
+#define QUEUE_MSG_SIZE__ TX_2_ULONG
+#define QUEUE_MSG_COUNT__ 8
 #define QUEUE_SIZE__ (QUEUE_MSG_SIZE__ * QUEUE_MSG_COUNT__)
 
 /*
@@ -140,44 +140,17 @@ void tx_application_define(void *first_unused_memory)
 
 void ThreadReadEntry(ULONG thread_input)
 {
-    char buf[32];
-    for (uint8_t i = 0; i < 32; i++)
-        buf[i] = 0;
-
-    char msg[16] = {0};
-    for (uint8_t i = 0; i < 16; i++)
-        msg[i] = 0;
+    // message buffer
+    char buf[8] = {0};
 
     while (true)
     {
-        if (tx_queue_receive(&queue_uart_read, msg, TX_WAIT_FOREVER) != TX_SUCCESS)
+        if (tx_queue_receive(&queue_uart_read, buf, TX_WAIT_FOREVER) != TX_SUCCESS)
         {
             break;
         }
 
         // fill buf with msg
-        int buffer_cursor = 0;
-        bool hasDelimiter = false;
-        for(uint8_t i = 0; i < 16; i++)
-        {
-            if (msg[i] == '\0')
-            {
-                break;
-            }
-
-            buf[buffer_cursor] = msg[i];
-            buffer_cursor += 1;
-            if (msg[i] == 0xD)
-            {
-                hasDelimiter = true;
-            }
-        }
-
-        if (!hasDelimiter)
-        {
-            continue;
-        }
-
         char identifier = buf[1];
 
         Elevator *elevator;
@@ -245,18 +218,6 @@ void ThreadReadEntry(ULONG thread_input)
 
         if(tx_mutex_put(mutex) != TX_SUCCESS)
             break;
-          
-        // clear buffer for parsed command
-        uint8_t next = 0;
-        while (buf[next] != 0xD)
-        {
-            next += 1;
-        }
-        next += 2;
-        for (uint8_t i = next; i < (32 - next); i++)
-        {
-            buf[i - next] = buf[i];
-        }
     }
 }
 
@@ -288,18 +249,27 @@ void CustomUARTIntHandler(void)
     uint32_t ui32Status = UARTIntStatus(UART0_BASE, true);
     UARTIntClear(UART0_BASE, ui32Status);
  
-    char buf[16] = {0};
-    for (uint8_t i = 0; i < 16; i++)
-        buf[i] = 0;
+    static char buf[8] = {0};
+    static int buf_position = 0;
 
-    int i = 0;
-
-    while(UARTCharsAvail(UART0_BASE) && i < 16)
+    while(UARTCharsAvail(UART0_BASE) && buf_position < 8)
     {
         char letter = UARTCharGet(UART0_BASE);
-        buf[i] = letter;
-        i += 1;
+        buf[buf_position] = letter;
+        if (letter == 0xA) // message terminator
+        {
+            // send buf
+            tx_queue_send(&queue_uart_read, buf, TX_NO_WAIT);
+            // clear buf
+            for (uint8_t i = 0; i < 8; i++)
+            {
+                buf[i] = 0;
+            }
+            buf_position = 0;
+        }
+        else
+        {
+            buf_position += 1;
+        }
     }
-
-    tx_queue_send(&queue_uart_read, buf, TX_NO_WAIT);
 }

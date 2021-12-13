@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include "inc/hw_ints.h"
@@ -11,6 +12,9 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/uart.h"
 #include "tx_api.h"
+#include <iostream>
+
+// #define TX_TIMER_TICKS_PER_SECOND ((ULONG) 1000)
 
 #define BYTE_POOL_SIZE__ 9120
 #define STACK_SIZE__ 1024
@@ -18,93 +22,41 @@
 #define QUEUE_MSG_COUNT__ 8
 #define QUEUE_SIZE__ (QUEUE_MSG_SIZE__ * QUEUE_MSG_COUNT__)
 
-/*
-1 word = 4 bytes
-16 bytes por mensagem = 4 words por mensagem
-4 mensagens de capacidade na queue * 16 bytes por mensagem = 64 bytes de tamanho da queue
-*/
-
-typedef enum DoorState_t {
-    OPEN,
-    CLOSED,
-    MOVING,
-} DoorState;
-
-typedef struct Elevator_t {
-    DoorState door_state;
-    uint8_t current_floor;
-    uint16_t internal_buttons; // 0b0000_0000_0000_1000
-    uint16_t external_buttons_up;
-    uint16_t external_buttons_down;
-    bool is_moving;
-    uint8_t target;
-} Elevator;
-
-bool is_button_pressed(uint16_t buttons, int number)
-{
-    return (buttons & number) == number;
-}
 
 uint32_t g_ui32SysClock;
+TX_BYTE_POOL byte_pool;
+UCHAR byte_pool_memory[BYTE_POOL_SIZE__];
 TX_THREAD thread_read;
 TX_THREAD thread_write;
 TX_THREAD thread_control;
 TX_QUEUE queue_uart_read;
-TX_MUTEX elevator_e_mutex;
-Elevator elevator_e;
-TX_MUTEX elevator_c_mutex;
-Elevator elevator_c;
-TX_MUTEX elevator_d_mutex;
-Elevator elevator_d;
 
-TX_BYTE_POOL byte_pool;
-UCHAR byte_pool_memory[BYTE_POOL_SIZE__];
-
+float stof(const char* s);
 
 void ThreadReadEntry(ULONG);
 void ThreadWriteEntry(ULONG);
 void ThreadControlEntry(ULONG);
-void CustomUARTIntHandler(void);
+float GetValue(char *sensor, char *buf);
 
 int main()
 {
-    elevator_e.door_state = CLOSED;
-    elevator_e.current_floor = 0;
-    elevator_e.internal_buttons = 0;
-    elevator_e.external_buttons_up = 0;
-    elevator_e.external_buttons_down = 0;
-
-    elevator_c.door_state = CLOSED;
-    elevator_c.current_floor = 0;
-    elevator_c.internal_buttons = 0;
-    elevator_c.external_buttons_up = 0;
-    elevator_c.external_buttons_down = 0;
-
-    elevator_d.door_state = CLOSED;
-    elevator_d.current_floor = 0;
-    elevator_d.internal_buttons = 0;
-    elevator_d.external_buttons_up = 0;
-    elevator_d.external_buttons_down = 0;
-
     // configura o clock para 120MHz
     g_ui32SysClock = SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ | SYSCTL_OSC_MAIN | SYSCTL_USE_PLL | SYSCTL_CFG_VCO_240), 120000000);
-    
+
     // ****** configuracoes da porta UART que utilizaremos ******   
     SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
-    
+
     //Habilita interrup��o
     IntMasterEnable();
-    
+
     // Configura a porta para receber e transmitir dados
     GPIOPinConfigure(GPIO_PA0_U0RX);
     GPIOPinConfigure(GPIO_PA1_U0TX);
     GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_0 | GPIO_PIN_1);
-    
+
     // seta a porta UART que usaremos pra baud rate de 115200Hz 
     UARTConfigSetExpClk(UART0_BASE, g_ui32SysClock, 115200, (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
-        
-    // Permite interrupcoes para a porta UART0 usada
 
     tx_kernel_enter();
 
@@ -128,97 +80,48 @@ void tx_application_define(void *first_unused_memory)
 
     tx_byte_allocate(&byte_pool, (VOID **) &alloc_bump_ptr, QUEUE_SIZE__, TX_NO_WAIT);
     tx_queue_create(&queue_uart_read, "Queue UART Read", QUEUE_MSG_SIZE__, alloc_bump_ptr, QUEUE_SIZE__);
-
-    tx_mutex_create(&elevator_e_mutex, "Elevator E Mutex", TX_NO_INHERIT);
-    tx_mutex_create(&elevator_c_mutex, "Elevator C Mutex", TX_NO_INHERIT);
-    tx_mutex_create(&elevator_d_mutex, "Elevator D Mutex", TX_NO_INHERIT);
-
-    IntEnable(INT_UART0);
-    UARTIntRegister(UART0_BASE, CustomUARTIntHandler);
-    UARTIntEnable(UART0_BASE, UART_INT_RX | UART_INT_RT);
 }
 
 void ThreadReadEntry(ULONG thread_input)
 {
-    // message buffer
-    char buf[8] = {0};
+
+    char buf[16] = {0};
 
     while (true)
     {
-        if (tx_queue_receive(&queue_uart_read, buf, TX_WAIT_FOREVER) != TX_SUCCESS)
-        {
-            break;
-        }
 
-        // fill buf with msg
-        char identifier = buf[1];
+        float value_u = GetValue("u", buf);
+        float value_rf = GetValue("rf", buf);
 
-        Elevator *elevator;
-        TX_MUTEX *mutex;
+        std::cout << "Value: " <<  value_u << std::endl;
+        std::cout << "Value: " <<  value_rf << std::endl;
 
-        if (buf[0] == 'e') 
-        {
-            elevator = &elevator_e;
-            mutex = &elevator_e_mutex;
-        }
-        else if (buf[0] == 'c')
-        {
-            elevator = &elevator_c;
-            mutex = &elevator_c_mutex;
-        }
-        else if (buf[0] == 'd')
-        {
-            elevator = &elevator_d;
-            mutex = &elevator_d_mutex;
-        }
+        
 
-        if(tx_mutex_get(mutex, TX_WAIT_FOREVER) != TX_SUCCESS)
-            break;
-
-        if (identifier == 'A') // porta abriu completamente
-        {
-            elevator->door_state = OPEN;
-        }
-        else if (identifier == 'F') // porta fechou completamente
-        {
-            elevator->door_state = CLOSED;
-        }
-        else if (identifier == 'I') // botão interno pressionado
-        {
-            uint8_t floor = buf[2] - 97; // andar vem no formato "a..p"
-            elevator->internal_buttons |= (1 << floor);
-        }
-        else if (identifier == 'E') // botão externo pressionado
-        {
-            int dicker = buf[2] == '0' ? 0 : 10;
-            uint8_t floor = dicker + (buf[3] - '0');
-            if (buf[4] == 's')
-            {
-                elevator->external_buttons_up |= (1 << floor);
-            }
-            else
-            {
-                elevator->external_buttons_down |= (1 << floor);
-            }
-        }
-        else if (identifier >= '0' && identifier <= '9') // elevador está em determinado andar
-        {
-            if (identifier == '1') // pode haver segundo dígito
-            {
-                if (buf[2] == 0xD)
-                {
-                    elevator->current_floor = 1; // não há segundo digito, valor é 1
-                }
-                else
-                {
-                    elevator->current_floor = 10 + (buf[2] - '0'); // há segundo dígito
-                }
-            }
-        }
-
-        if(tx_mutex_put(mutex) != TX_SUCCESS)
-            break;
+        tx_thread_sleep(10);
     }
+}
+
+float GetValue(char *sensor, char *buf)
+{
+    UARTCharPut(UART0_BASE, 'P');
+    for (uint8_t i = 0; i < strlen(sensor); i++)
+    {
+        UARTCharPut(UART0_BASE, sensor[i]);
+    }
+    UARTCharPut(UART0_BASE, ';');
+
+    // Wait for buffer to fill with response.
+    tx_thread_sleep(10);
+
+    uint8_t i = 0;
+    while (UARTCharsAvail(UART0_BASE))
+    {
+        buf[i] = UARTCharGet(UART0_BASE);
+        i += 1;
+    }
+
+    return atof(buf + 1 + strlen(sensor));
 }
 
 void ThreadWriteEntry(ULONG thread_input)
@@ -237,39 +140,31 @@ void ThreadControlEntry(ULONG thread_input)
     }
 }
 
-void UpdateElevatorAndSendCommands(Elevator *elevator)
+float stof(const char* s)
 {
-    if (elevator->external_buttons_down != 0)
+    float rez = 0, fact = 1;
+    if (*s == '-')
     {
+        s++;
+        fact = -1;
     }
-}
 
-void CustomUARTIntHandler(void)
-{
-    uint32_t ui32Status = UARTIntStatus(UART0_BASE, true);
-    UARTIntClear(UART0_BASE, ui32Status);
- 
-    static char buf[8] = {0};
-    static int buf_position = 0;
-
-    while(UARTCharsAvail(UART0_BASE) && buf_position < 8)
+    for (int point_seen = 0; *s; s++)
     {
-        char letter = UARTCharGet(UART0_BASE);
-        buf[buf_position] = letter;
-        if (letter == 0xA) // message terminator
+        if (*s == '.')
         {
-            // send buf
-            tx_queue_send(&queue_uart_read, buf, TX_NO_WAIT);
-            // clear buf
-            for (uint8_t i = 0; i < 8; i++)
-            {
-                buf[i] = 0;
-            }
-            buf_position = 0;
+            point_seen = 1; 
+            continue;
         }
-        else
+
+        int d = *s - '0';
+
+        if (d >= 0 && d <= 9)
         {
-            buf_position += 1;
+            if (point_seen) fact /= 10.0f;
+            rez = rez * 10.0f + (float)d;
         }
     }
+
+    return rez * fact;
 }

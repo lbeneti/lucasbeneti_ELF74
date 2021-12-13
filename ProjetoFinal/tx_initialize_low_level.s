@@ -143,6 +143,7 @@ _tx_initialize_low_level:
     BX      lr
 ;}
 ;
+
     PUBLIC  SysTick_Handler
     PUBLIC  __tx_SysTickHandler
 __tx_SysTickHandler:

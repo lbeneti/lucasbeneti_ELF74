@@ -21,7 +21,7 @@
 #define QUEUE_MSG_SIZE__ TX_2_ULONG
 #define QUEUE_MSG_COUNT__ 8
 #define QUEUE_SIZE__ (QUEUE_MSG_SIZE__ * QUEUE_MSG_COUNT__)
-
+#define COEFFICIENT 0.15
 
 uint32_t g_ui32SysClock;
 TX_BYTE_POOL byte_pool;
@@ -30,6 +30,12 @@ TX_THREAD thread_read;
 TX_THREAD thread_write;
 TX_THREAD thread_control;
 TX_QUEUE queue_uart_read;
+
+float rf;
+TX_MUTEX mutex_rf;
+
+float turn;
+TX_MUTEX mutex_turn;
 
 float stof(const char* s);
 
@@ -56,7 +62,7 @@ int main()
     GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_0 | GPIO_PIN_1);
 
     // seta a porta UART que usaremos pra baud rate de 115200Hz 
-    UARTConfigSetExpClk(UART0_BASE, g_ui32SysClock, 115200, (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
+    UARTConfigSetExpClk(UART0_BASE, 120000000, 115200, (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
 
     tx_kernel_enter();
 
@@ -80,23 +86,86 @@ void tx_application_define(void *first_unused_memory)
 
     tx_byte_allocate(&byte_pool, (VOID **) &alloc_bump_ptr, QUEUE_SIZE__, TX_NO_WAIT);
     tx_queue_create(&queue_uart_read, "Queue UART Read", QUEUE_MSG_SIZE__, alloc_bump_ptr, QUEUE_SIZE__);
+
+    tx_mutex_create(&mutex_rf, "Mutex RF", TX_NO_INHERIT);
+
+    tx_mutex_create(&mutex_turn, "Mutex Turn", TX_NO_INHERIT);
+}
+
+void SendCommand(char *cmd)
+{
+    for (uint8_t i = 0; i < strlen(cmd); i++)
+    {
+        UARTCharPut(UART0_BASE, cmd[i]);
+    }
 }
 
 void ThreadReadEntry(ULONG thread_input)
 {
-
     char buf[16] = {0};
 
     while (true)
     {
-
-        float value_u = GetValue("u", buf);
         float value_rf = GetValue("rf", buf);
 
-        std::cout << "Value: " <<  value_u << std::endl;
-        std::cout << "Value: " <<  value_rf << std::endl;
+        if (tx_mutex_get(&mutex_rf, TX_WAIT_FOREVER) != TX_SUCCESS)
+            break;
 
-        
+        rf = value_rf;
+
+        if (tx_mutex_put(&mutex_rf) != TX_SUCCESS)
+            break;
+
+        tx_thread_sleep(10);
+    }
+}
+
+void ThreadWriteEntry(ULONG thread_input)
+{
+    char buf[16] = {0};
+
+    SendCommand("A8;");
+    tx_thread_sleep(100);
+    SendCommand("A0;");
+
+    while (true)
+    {
+        if (tx_mutex_get(&mutex_turn, TX_WAIT_FOREVER) != TX_SUCCESS) break;
+
+        float turn_ = turn;
+
+        if (tx_mutex_put(&mutex_turn) != TX_SUCCESS)
+            break;
+
+        int count = sprintf(buf, "V%f;", turn_);
+
+        buf[count] = '\0';
+
+        SendCommand(buf);
+
+        tx_thread_sleep(10);
+    }
+}
+
+void ThreadControlEntry(ULONG thread_input)
+{
+    while (true)
+    {
+        if (tx_mutex_get(&mutex_rf, TX_WAIT_FOREVER) != TX_SUCCESS)
+            break;
+
+        float turn_ = -COEFFICIENT * rf;
+
+        if (tx_mutex_put(&mutex_rf) != TX_SUCCESS)
+            break;
+
+        if (tx_mutex_get(&mutex_turn, TX_WAIT_FOREVER) != TX_SUCCESS)
+            break;
+
+        turn = turn_;
+
+        if (tx_mutex_put(&mutex_turn) != TX_SUCCESS)
+            break;
 
         tx_thread_sleep(10);
     }
@@ -122,49 +191,4 @@ float GetValue(char *sensor, char *buf)
     }
 
     return atof(buf + 1 + strlen(sensor));
-}
-
-void ThreadWriteEntry(ULONG thread_input)
-{
-    while (true)
-    {
-        tx_thread_sleep(1000);
-    }
-}
-
-void ThreadControlEntry(ULONG thread_input)
-{
-    while (true)
-    {
-        tx_thread_sleep(1000);
-    }
-}
-
-float stof(const char* s)
-{
-    float rez = 0, fact = 1;
-    if (*s == '-')
-    {
-        s++;
-        fact = -1;
-    }
-
-    for (int point_seen = 0; *s; s++)
-    {
-        if (*s == '.')
-        {
-            point_seen = 1; 
-            continue;
-        }
-
-        int d = *s - '0';
-
-        if (d >= 0 && d <= 9)
-        {
-            if (point_seen) fact /= 10.0f;
-            rez = rez * 10.0f + (float)d;
-        }
-    }
-
-    return rez * fact;
 }

@@ -56,7 +56,7 @@ void WriteToUARTEntry(ULONG);
 void ControThreadEntry(ULONG);
 void SendVehicleCommand(char *command);
 float GetSensorReading(char *sensor, char *buf);
-void StartStopVehicle(void);
+void StartStopVehicle();
 //TODO:
 // implementar as ISR pra controlar o carrinho
 
@@ -72,7 +72,7 @@ int main()
     SysCtlDelay(3);
 
     //Habilita interrup��o
-    IntMasterEnable();
+    //IntMasterEnable();
 
     // Configura a porta para receber e transmitir dados
     GPIOPinConfigure(GPIO_PA0_U0RX);
@@ -118,7 +118,6 @@ void tx_application_define(void *first_unused_memory)
     tx_mutex_create(&vehicle_mutex, (char *) "Vehicle Mutex", TX_NO_INHERIT);
 }
 
-//TODO: mudar essa função aqui, de lugar e tal
 void SendVehicleCommand(char *command) {
     for (uint8_t i = 0; i < strlen(command); i++) {
         UARTCharPut(UART0_BASE, command[i]);
@@ -148,17 +147,13 @@ float GetSensorReading(char *sensor, char *buf) {
 void StartStopVehicle() {
     uint32_t status = GPIOIntStatus(GPIO_PORTJ_BASE, false);
     if(status & GPIO_PIN_0) {
+        GPIOIntDisable(GPIO_PORTJ_BASE, GPIO_PIN_0);
+        GPIOIntClear(GPIO_PORTJ_BASE, GPIO_PIN_0);
         SendVehicleCommand("A8;");
         tx_thread_sleep(100);
         SendVehicleCommand("A0;");
         vehicleRunning = true;
-    }
-    // else if(status & GPIO_PIN_1) {
-    //     if(vehicleRunning) {
-    //         SendVehicleCommand("S;");
-    //     }
-    // }
-    
+    }    
 }
 
 
@@ -203,15 +198,14 @@ void ReadingThreadEntry(ULONG thread_input) {
 void WriteToUARTEntry(ULONG thread_input) {
     char buf[16] = {0};
 
-    // SendVehicleCommand("A8;");
-    // tx_thread_sleep(100);
-    // SendVehicleCommand("A0;");
+    SendVehicleCommand("A5;");
+    tx_thread_sleep(100);
+    SendVehicleCommand("A0;");
 
     while (true) {
         if (tx_mutex_get(&vehicle_mutex, TX_WAIT_FOREVER) != TX_SUCCESS){
             break;
         }
-            
 
         float turnAngle = vehicle.turnAngle;
 
@@ -237,8 +231,8 @@ void ControThreadEntry(ULONG thread_input) {
 
         float turn_ = -COEFFICIENT * sensorData.pRf;
         // tem que rever essa parte porque não dá pra usar só o laser ou só o ultrassom
-        if(sensorData.pUltrasound <= 25.0 && sensorData.pUltrasound > 20.0) {
-            turn_ -= 0.5;
+        if(sensorData.pUltrasound <= 25.0 && sensorData.pUltrasound > 10.0) {
+            turn_ = HandleCollision(turn_);
         }
 
         if (tx_mutex_put(&sensorData_mutex) != TX_SUCCESS) {
@@ -257,4 +251,12 @@ void ControThreadEntry(ULONG thread_input) {
 
         tx_thread_sleep(10);
     }
+}
+
+float HandleCollision(float currTurn) {
+
+    if(sensorData.pUltrasound <= 25.0 && sensorData.pUltrasound > 0.0) {
+
+    }   
+    return turnAngle
 }

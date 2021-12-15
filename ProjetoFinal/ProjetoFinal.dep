@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
     <fileVersion>5</fileVersion>
-    <fileChecksum>1726365961</fileChecksum>
+    <fileChecksum>2994675951</fileChecksum>
     <configuration>
         <name>Debug</name>
         <outputs>
@@ -55,8 +55,6 @@
             <file>$PROJ_DIR$\..\..\ThreadX\common\inc\tx_api.h</file>
             <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295\driverlib\gpio.h</file>
             <file>$TOOLKIT_DIR$\inc\c\time64.h</file>
-            <file>$PROJ_DIR$\Debug\Obj\Source\startup_ewarm.o</file>
-            <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295\inc\hw_types.h</file>
             <file>$TOOLKIT_DIR$\inc\c\xlocale_lconv.h</file>
             <file>$TOOLKIT_DIR$\inc\cpp\cwctype</file>
             <file>$TOOLKIT_DIR$\inc\cpp\xxexception</file>
@@ -66,10 +64,8 @@
             <file>$TOOLKIT_DIR$\inc\cpp\xstddef</file>
             <file>$TOOLKIT_DIR$\inc\cpp\cerrno</file>
             <file>$TOOLKIT_DIR$\inc\c\math.h</file>
-            <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295\inc\hw_nvic.h</file>
             <file>$PROJ_DIR$\Debug\Obj\Source\main.o</file>
             <file>$TOOLKIT_DIR$\inc\cpp\xstring</file>
-            <file>$PROJ_DIR$\startup_ewarm.c</file>
             <file>$TOOLKIT_DIR$\inc\c\errno.h</file>
             <file>$TOOLKIT_DIR$\inc\cpp\system_error</file>
             <file>$TOOLKIT_DIR$\inc\cpp\cctype</file>
@@ -126,7 +122,7 @@
             <inputs>
                 <tool>
                     <name>ILINK</name>
-                    <file> 17 101 8 28 15 77 0 5 30 62 32 50 33 45</file>
+                    <file> 17 97 8 28 15 73 0 5 30 59 32 33 45</file>
                 </tool>
             </inputs>
         </file>
@@ -135,13 +131,13 @@
             <outputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 62</file>
+                    <file> 59</file>
                 </tool>
             </outputs>
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 29 43 55 11 13 86 34 23 41 85 65 84 95 83 60 46 90 24 94 44 37 106 49 80 92 20 56 52 98 26 2 31 67 59 42 79 91 19 89 70 97 103 71 102 96 53 107 105 73 40 68 74 87 99 88 9 21 66 22 27 72 69 104 75 78 93 58 76 63 82 57 54 47 14 108 48 16 12 81 18 25 35 36 100</file>
+                    <file> 29 43 53 11 13 82 34 23 41 81 61 80 91 79 58 46 86 24 90 44 37 102 49 76 88 20 54 50 94 26 2 31 63 57 42 75 87 19 85 66 93 99 67 98 92 51 103 101 69 40 64 70 83 95 84 9 21 62 22 27 68 65 100 71 74 89 56 72 60 78 55 52 47 14 104 48 16 12 77 18 25 35 36 96</file>
                 </tool>
             </inputs>
         </file>
@@ -181,21 +177,6 @@
                 <tool>
                     <name>AARM</name>
                     <file> 39</file>
-                </tool>
-            </inputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\startup_ewarm.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 50</file>
-                </tool>
-            </outputs>
-            <inputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 29 43 55 24 26 31 61 51</file>
                 </tool>
             </inputs>
         </file>

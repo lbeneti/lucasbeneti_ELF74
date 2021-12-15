@@ -56,7 +56,7 @@ extern void StartStopVehicle(void);
 // The entry point for the application startup code.
 //
 //*****************************************************************************
-extern void __iar_program_start(void);
+void __iar_program_start(void);
 
 //*****************************************************************************
 //

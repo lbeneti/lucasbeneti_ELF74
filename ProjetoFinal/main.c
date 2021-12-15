@@ -17,9 +17,6 @@
 
 #define BYTE_POOL_SIZE__ 9120
 #define STACK_SIZE__ 1024
-// #define QUEUE_MSG_SIZE__ TX_2_ULONG
-// #define QUEUE_MSG_COUNT__ 8
-// #define QUEUE_SIZE__ (QUEUE_MSG_SIZE__ * QUEUE_MSG_COUNT__)
 #define COEFFICIENT 0.15
 
 uint32_t g_ui32SysClock;
@@ -57,8 +54,6 @@ void ControThreadEntry(ULONG);
 void SendVehicleCommand(char *command);
 float GetSensorReading(char *sensor, char *buf);
 void StartStopVehicle();
-//TODO:
-// implementar as ISR pra controlar o carrinho
 
 int main()
 {
@@ -72,7 +67,7 @@ int main()
     SysCtlDelay(3);
 
     //Habilita interrup��o
-    //IntMasterEnable();
+    // IntMasterEnable();
 
     // Configura a porta para receber e transmitir dados
     GPIOPinConfigure(GPIO_PA0_U0RX);
@@ -147,9 +142,7 @@ float GetSensorReading(char *sensor, char *buf) {
 void StartStopVehicle() {
     uint32_t status = GPIOIntStatus(GPIO_PORTJ_BASE, false);
     if(status & GPIO_PIN_0) {
-        GPIOIntDisable(GPIO_PORTJ_BASE, GPIO_PIN_0);
-        GPIOIntClear(GPIO_PORTJ_BASE, GPIO_PIN_0);
-        SendVehicleCommand("A8;");
+        SendVehicleCommand("A5;");
         tx_thread_sleep(100);
         SendVehicleCommand("A0;");
         vehicleRunning = true;
@@ -198,9 +191,9 @@ void ReadingThreadEntry(ULONG thread_input) {
 void WriteToUARTEntry(ULONG thread_input) {
     char buf[16] = {0};
 
-    SendVehicleCommand("A5;");
-    tx_thread_sleep(100);
-    SendVehicleCommand("A0;");
+    // SendVehicleCommand("A5;");
+    // tx_thread_sleep(100);
+    // SendVehicleCommand("A0;");
 
     while (true) {
         if (tx_mutex_get(&vehicle_mutex, TX_WAIT_FOREVER) != TX_SUCCESS){
@@ -229,10 +222,12 @@ void ControThreadEntry(ULONG thread_input) {
             break;
         }
 
-        float turn_ = -COEFFICIENT * sensorData.pRf;
+        float turnAngle = 0.0;
         // tem que rever essa parte porque não dá pra usar só o laser ou só o ultrassom
         if(sensorData.pUltrasound <= 25.0 && sensorData.pUltrasound > 10.0) {
-            turn_ = HandleCollision(turn_);
+            turnAngle = COEFFICIENT * sensorData.pRf * (sensorData.pUltrasound);
+        } else {
+            turnAngle = -COEFFICIENT * sensorData.pRf;
         }
 
         if (tx_mutex_put(&sensorData_mutex) != TX_SUCCESS) {
@@ -243,7 +238,7 @@ void ControThreadEntry(ULONG thread_input) {
             break;
         }
 
-        vehicle.turnAngle = turn_;
+        vehicle.turnAngle = turnAngle;
 
         if (tx_mutex_put(&vehicle_mutex) != TX_SUCCESS) {
             break;
@@ -251,12 +246,4 @@ void ControThreadEntry(ULONG thread_input) {
 
         tx_thread_sleep(10);
     }
-}
-
-float HandleCollision(float currTurn) {
-
-    if(sensorData.pUltrasound <= 25.0 && sensorData.pUltrasound > 0.0) {
-
-    }   
-    return turnAngle
 }

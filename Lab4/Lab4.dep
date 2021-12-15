@@ -5,59 +5,74 @@
     <configuration>
         <name>Debug</name>
         <outputs>
-            <file>$TOOLKIT_DIR$\lib\rt7M_tl.a</file>
-            <file>$TOOLKIT_DIR$\lib\m7M_tls.a</file>
-            <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295\inc\hw_ints.h</file>
-            <file>$TOOLKIT_DIR$\inc\c\stdbool.h</file>
             <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295\driverlib\sysctl.h</file>
-            <file>$PROJ_DIR$\main.c</file>
+            <file>$TOOLKIT_DIR$\lib\rt7M_tl.a</file>
             <file>$TOOLKIT_DIR$\inc\c\DLib_Config_Normal.h</file>
-            <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295\inc\hw_types.h</file>
-            <file>$TOOLKIT_DIR$\lib\shb_l.a</file>
+            <file>$PROJ_DIR$\Debug\Obj\Source\startup_ewarm.o</file>
             <file>$TOOLKIT_DIR$\inc\c\stdint.h</file>
-            <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295\inc\hw_memmap.h</file>
-            <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295\driverlib\pin_map.h</file>
+            <file>$PROJ_DIR$\Debug\Exe\Lab4.out</file>
+            <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295\driverlib\rom.h</file>
+            <file>$TOOLKIT_DIR$\inc\c\DLib_Defaults.h</file>
+            <file>$PROJ_DIR$\main.c</file>
+            <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295_for_Embarcados\TivaWare_C_Series-2.2.0.295\driverlib\ewarm\Exe\driverlib.a</file>
+            <file>$PROJ_DIR$\startup_ewarm.c</file>
+            <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295\driverlib\uart.h</file>
+            <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295\driverlib\gpio.h</file>
             <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295\driverlib\interrupt.h</file>
             <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295\inc\hw_nvic.h</file>
-            <file>$PROJ_DIR$\Debug\List\Lab4.map</file>
-            <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295\driverlib\gpio.h</file>
-            <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295_for_Embarcados\TivaWare_C_Series-2.2.0.295\driverlib\ewarm\Exe\driverlib.a</file>
-            <file>$TOOLKIT_DIR$\inc\c\DLib_Product.h</file>
-            <file>$TOOLKIT_DIR$\inc\c\DLib_Defaults.h</file>
-            <file>$PROJ_DIR$\startup_ewarm.c</file>
+            <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295\inc\hw_memmap.h</file>
             <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295\driverlib\debug.h</file>
-            <file>$TOOLKIT_DIR$\inc\c\yvals.h</file>
-            <file>$PROJ_DIR$\Debug\Obj\Source\main.o</file>
-            <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295\driverlib\rom_map.h</file>
-            <file>$PROJ_DIR$\Debug\Obj\Source\startup_ewarm.o</file>
-            <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295\driverlib\uart.h</file>
-            <file>$PROJ_DIR$\Debug\Exe\Lab4.out</file>
-            <file>$TOOLKIT_DIR$\config\linker\TexasInstruments\TM4C1294NC.icf</file>
-            <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295\driverlib\rom.h</file>
             <file>$TOOLKIT_DIR$\lib\dl7M_tln.a</file>
+            <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295\driverlib\rom_map.h</file>
+            <file>$TOOLKIT_DIR$\config\linker\TexasInstruments\TM4C1294NC.icf</file>
+            <file>$TOOLKIT_DIR$\lib\m7M_tls.a</file>
+            <file>$TOOLKIT_DIR$\inc\c\yvals.h</file>
             <file>$TOOLKIT_DIR$\inc\c\ycheck.h</file>
+            <file>$TOOLKIT_DIR$\lib\shb_l.a</file>
+            <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295\inc\hw_types.h</file>
+            <file>$PROJ_DIR$\Debug\Obj\Source\main.o</file>
+            <file>$TOOLKIT_DIR$\inc\c\DLib_Product.h</file>
+            <file>$PROJ_DIR$\Debug\List\Lab4.map</file>
+            <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295\driverlib\pin_map.h</file>
+            <file>$TOOLKIT_DIR$\inc\c\stdbool.h</file>
+            <file>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295\inc\hw_ints.h</file>
         </outputs>
         <file>
             <name>[ROOT_NODE]</name>
             <outputs>
                 <tool>
                     <name>ILINK</name>
-                    <file> 26 14</file>
+                    <file> 5 27</file>
                 </tool>
             </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\Debug\Exe\Lab4.out</name>
+            <outputs>
+                <tool>
+                    <name>ILINK</name>
+                    <file> 27</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ILINK</name>
+                    <file> 19 17 20 1 23 9 25 3</file>
+                </tool>
+            </inputs>
         </file>
         <file>
             <name>$PROJ_DIR$\main.c</name>
             <outputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 22</file>
+                    <file> 25</file>
                 </tool>
             </outputs>
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 6 18 17 3 9 30 21 20 15 12 11 28 23 4 25 2 10</file>
+                    <file> 2 7 26 29 4 22 21 16 12 13 28 6 18 0 11 30 15</file>
                 </tool>
             </inputs>
         </file>
@@ -66,28 +81,13 @@
             <outputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 24</file>
+                    <file> 3</file>
                 </tool>
             </outputs>
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 6 18 17 9 30 21 13 7</file>
-                </tool>
-            </inputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\Debug\Exe\Lab4.out</name>
-            <outputs>
-                <tool>
-                    <name>ILINK</name>
-                    <file> 14</file>
-                </tool>
-            </outputs>
-            <inputs>
-                <tool>
-                    <name>ILINK</name>
-                    <file> 27 29 1 0 8 16 22 24</file>
+                    <file> 2 7 26 4 22 21 14 24</file>
                 </tool>
             </inputs>
         </file>

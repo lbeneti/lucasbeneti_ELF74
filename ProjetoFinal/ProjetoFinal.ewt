@@ -2854,10 +2854,13 @@
             <name>$PROJ_DIR$\cstartup_M.s</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\mainv2.c</name>
+            <name>$PROJ_DIR$\main.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\sample_threadx.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\startup_ewarm.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\tx_initialize_low_level.s</name>

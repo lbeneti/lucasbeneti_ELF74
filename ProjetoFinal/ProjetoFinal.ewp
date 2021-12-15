@@ -334,9 +334,9 @@
                 </option>
                 <option>
                     <name>CCIncludePath2</name>
+                    <state>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295</state>
                     <state>$PROJ_DIR$\..\..\ThreadX\ports\cortex_m4\iar\inc</state>
                     <state>$PROJ_DIR$\..\..\ThreadX\common\inc</state>
-                    <state>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -2115,10 +2115,13 @@
             <name>$PROJ_DIR$\cstartup_M.s</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\mainv2.c</name>
+            <name>$PROJ_DIR$\main.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\sample_threadx.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\startup_ewarm.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\tx_initialize_low_level.s</name>

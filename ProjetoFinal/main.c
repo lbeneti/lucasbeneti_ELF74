@@ -64,16 +64,18 @@ int main() {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOJ);
     SysCtlDelay(3);
 
+    IntMasterEnable();
+
     // Configura a porta para receber e transmitir dados
     GPIOPinConfigure(GPIO_PA0_U0RX);
     GPIOPinConfigure(GPIO_PA1_U0TX);
     GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_0 | GPIO_PIN_1);
 
 
-    // GPIOPinTypeGPIOInput(GPIO_PORTJ_BASE, GPIO_PIN_0); // setting PIN_0 as input
-    // GPIOPinTypeGPIOInput(GPIO_PORTJ_BASE, GPIO_PIN_1); // setting PIN_0 as input
-    // GPIOPadConfigSet(GPIO_PORTJ_BASE, GPIO_PIN_0, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU); // button config
-    // GPIOPadConfigSet(GPIO_PORTJ_BASE, GPIO_PIN_1, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU); // button config
+    GPIOPinTypeGPIOInput(GPIO_PORTJ_BASE, GPIO_PIN_0); // setting PIN_0 as input
+    GPIOPadConfigSet(GPIO_PORTJ_BASE, GPIO_PIN_0, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU); // button config
+    GPIOPinTypeGPIOInput(GPIO_PORTJ_BASE, GPIO_PIN_1); // setting PIN_0 as input
+    GPIOPadConfigSet(GPIO_PORTJ_BASE, GPIO_PIN_1, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU); // button config
 
     // seta a porta UART que usaremos pra baud rate de 115200Hz 
     UARTConfigSetExpClk(UART0_BASE, g_ui32SysClock, 115200, (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
@@ -99,7 +101,7 @@ void tx_application_define(void *first_unused_memory)
     tx_thread_create(&thread_control, (char *) "Control Thread", ControlThreadEntry, 1, alloc_bump_ptr, STACK_SIZE__, 2, 2, TX_NO_TIME_SLICE, TX_AUTO_START);
     
     tx_byte_allocate(&byte_pool, (VOID **) &alloc_bump_ptr, STACK_SIZE__, TX_NO_WAIT);
-    tx_thread_create(&thread_start_button, (char *) "Start Button Thread", StartButtonThreadEntry, 1, alloc_bump_ptr, STACK_SIZE__, 2, 2, TX_NO_TIME_SLICE, TX_AUTO_START);
+    tx_thread_create(&thread_start_button, (char *) "Start Button Thread", StartButtonThreadEntry, 1, alloc_bump_ptr, STACK_SIZE__, 3, 3, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     tx_mutex_create(&sensorData_mutex, (char *) "Sensor Data Mutex", TX_NO_INHERIT);
     tx_mutex_create(&vehicle_mutex, (char *) "Vehicle Mutex", TX_NO_INHERIT);
@@ -128,28 +130,23 @@ float GetSensorReading(char *sensor, char *buf) {
     return atof(buf + 1 + strlen(sensor));
 }
 
-// void StartButtonThreadEntry(ULONG thread_input) {
-    
-//     do {
-//         uint32_t status = GPIOIntStatus(GPIO_PORTJ_BASE, false);
-//         if(status & GPIO_PIN_0) {
-//             SendVehicleCommand("A5;");
-//             tx_thread_sleep(100);
-//             SendVehicleCommand("A0;");
-//             vehicle_started = true;
-//         }
-//         tx_thread_sleep(10);
-//     } while (!vehicle_started);
-
-//     do {
-//         uint32_t status = GPIOIntStatus(GPIO_PORTJ_BASE, false);
-//         if(status & GPIO_PIN_1) {
-//             SendVehicleCommand("S;");
-//             vehicle_started = false;
-//         }
-//         tx_thread_sleep(10);
-//     } while (vehicle_started);
-// }
+void StartButtonThreadEntry(ULONG thread_input) {
+    while(true) {
+        
+        if(!GPIOPinRead(GPIO_PORTJ_BASE, GPIO_PIN_0)) {
+            if(!vehicle_started) {
+                SendVehicleCommand("A10;");
+                tx_thread_sleep(100);
+                SendVehicleCommand("A0;");
+                vehicle_started = true;
+            } else if(vehicle_started) {
+                SendVehicleCommand("S;");
+                vehicle_started = false;       
+            }
+        }        
+        tx_thread_sleep(10);
+    }
+}
 
 void ReadingThreadEntry(ULONG thread_input) {
     char bufRf[16] = {0};
@@ -168,6 +165,7 @@ void ReadingThreadEntry(ULONG thread_input) {
         if (tx_mutex_put(&sensorData_mutex) != TX_SUCCESS) {
             break;
         }
+        tx_thread_sleep(10);
     }
 }
 
@@ -197,6 +195,9 @@ void WriteToUARTEntry(ULONG thread_input) {
 }
 
 void ControlThreadEntry(ULONG thread_input) {
+    // SendVehicleCommand("A5;");
+    // tx_thread_sleep(100);
+    // SendVehicleCommand("A0;");
     while (true) {
         if (tx_mutex_get(&sensorData_mutex, TX_WAIT_FOREVER) != TX_SUCCESS) {
             break;
@@ -218,4 +219,8 @@ void ControlThreadEntry(ULONG thread_input) {
         }
         tx_thread_sleep(10);
     }
+}
+
+float handleSensorData() {
+    return 0;
 }

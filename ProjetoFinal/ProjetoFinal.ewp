@@ -334,9 +334,9 @@
                 </option>
                 <option>
                     <name>CCIncludePath2</name>
+                    <state>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295</state>
                     <state>$PROJ_DIR$\..\..\ThreadX\ports\cortex_m4\iar\inc</state>
                     <state>$PROJ_DIR$\..\..\ThreadX\common\inc</state>
-                    <state>$PROJ_DIR$\..\..\TivaWare_C_Series-2.2.0.295</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -352,7 +352,7 @@
                 </option>
                 <option>
                     <name>CCOptLevel</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>CCOptStrategy</name>
@@ -361,7 +361,7 @@
                 </option>
                 <option>
                     <name>CCOptLevelSlave</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>CCPosIndRopi</name>
@@ -377,7 +377,7 @@
                 </option>
                 <option>
                     <name>IccLang</name>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>IccCDialect</name>
@@ -385,11 +385,11 @@
                 </option>
                 <option>
                     <name>IccAllowVLA</name>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>IccStaticDestr</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>IccCppInlineSemantics</name>
@@ -638,7 +638,7 @@
                 </option>
                 <option>
                     <name>OOCOutputFile</name>
-                    <state></state>
+                    <state>ProjetoFinal.srec</state>
                 </option>
                 <option>
                     <name>OOCCommandLineProducer</name>
@@ -685,7 +685,7 @@
                 </option>
                 <option>
                     <name>IlinkOutputFile</name>
-                    <state>Lab5.out</state>
+                    <state>ProjetoFinal.out</state>
                 </option>
                 <option>
                     <name>IlinkDebugInfoEnable</name>
@@ -982,7 +982,7 @@
                 </option>
                 <option>
                     <name>IlinkTrustzoneImportLibraryOut</name>
-                    <state>Lab5_import_lib.o</state>
+                    <state>ProjetoFinal_import_lib.o</state>
                 </option>
                 <option>
                     <name>OILinkExtraOption</name>
@@ -2113,6 +2113,9 @@
         <name>Source</name>
         <file>
             <name>$PROJ_DIR$\cstartup_M.s</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\main.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\sample_threadx.c</name>

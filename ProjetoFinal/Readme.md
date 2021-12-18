@@ -4,4 +4,5 @@
 ## RA: 1489291
 
 Link para o video do projeto:
-https://drive.google.com/drive/folders/1FEYFmH5-QSS45UpdG2S6qxsdHrB689H6?usp=sharing
+YouTube: https://youtu.be/HI2CZDzA9pM
+Drive: https://drive.google.com/file/d/1yEa8GbymjWS75463XTYlag-3kBynqE4g/view?usp=sharing

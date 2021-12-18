@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <iostream>
+// #include <iostream>
 #include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
 #include "driverlib/debug.h"
@@ -28,18 +28,18 @@ TX_THREAD thread_control;
 TX_THREAD thread_start_button;
 
 typedef struct {
-    float pRf = 0.0;
-    float pUltrasound = 0.0;
-    float pLaser = 0.0;
-    float pBcam = 0.0;
+    float pRf;
+    float pUltrasound;
+    float pLaser;
+    float pBcam;
 } SensorData;
 
 SensorData sensorData;
 TX_MUTEX sensorData_mutex;
 
 typedef struct {
-    float acceleration = 0.0;
-    float turnAngle = 0.0;
+    float acceleration;
+    float turnAngle;
 } Vehicle;
 
 Vehicle vehicle;
@@ -116,7 +116,7 @@ void SendVehicleCommand(char *command) {
 }
 
 float GetSensorReading(char *sensor, char *buf) {
-    UARTCharPut(UART0_BASE, 'P');
+    // UARTCharPut(UART0_BASE, 'P');
     for (uint8_t i = 0; i < strlen(sensor); i++) {
         UARTCharPut(UART0_BASE, sensor[i]);
     }
@@ -129,7 +129,7 @@ float GetSensorReading(char *sensor, char *buf) {
         i += 1;
     }
 
-    return atof(buf + 1 + strlen(sensor));
+    return atof(buf + strlen(sensor));
 }
 
 void StartButtonThreadEntry(ULONG thread_input) {
@@ -152,7 +152,7 @@ void StartButtonThreadEntry(ULONG thread_input) {
 void ReadingThreadEntry(ULONG thread_input) {
     char bufRf[16] = {0};
     while (true) {
-        float rfReading = GetSensorReading("rf", bufRf); // faz a leitura do sensor de RF
+        float rfReading = GetSensorReading("Prf", bufRf); // faz a leitura do sensor de RF
         if (tx_mutex_get(&sensorData_mutex, TX_WAIT_FOREVER) != TX_SUCCESS) {
             break;
         }
@@ -186,7 +186,7 @@ void WriteToUARTEntry(ULONG thread_input) {
         
         SendVehicleCommand(commandBuf);
         
-        tx_thread_sleep(10);
+        tx_thread_sleep(5);
     }
 }
 
@@ -196,13 +196,14 @@ void ControlThreadEntry(ULONG thread_input) {
             break;
         }
         float turnAngle = 0.0;
-        float rfTemp = sensorData.pRf > 0 ? (sensorData.pRf*-1) : sensorData.pRf;
-        if (rfTemp > 0.5 && rfTemp < 3) {
-            turnAngle = sensorData.pRf *2*(-1);
-        } else {
-            turnAngle = -0.3 * sensorData.pRf;
-        }
-        
+        if(vehicle_started) {
+            float rfTemp = sensorData.pRf > 0 ? sensorData.pRf : (sensorData.pRf*-1);
+            if (rfTemp > 1.5 && rfTemp < 3) {
+                turnAngle = sensorData.pRf *10*(-1);
+            } else {
+                turnAngle = -0.3 * sensorData.pRf;
+            }
+        }        
 
         if (tx_mutex_put(&sensorData_mutex) != TX_SUCCESS) {
             break;

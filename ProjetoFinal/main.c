@@ -54,6 +54,8 @@ void SendVehicleCommand(char *command);
 void StartButtonThreadEntry(ULONG);
 float GetSensorReading(char *sensor, char *buf);
 
+float HandleCollision(SensorData);
+
 int main() {
     // configura o clock para 120MHz
     g_ui32SysClock = SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ | SYSCTL_OSC_MAIN | SYSCTL_USE_PLL | SYSCTL_CFG_VCO_240), 120000000);
@@ -131,11 +133,10 @@ float GetSensorReading(char *sensor, char *buf) {
 }
 
 void StartButtonThreadEntry(ULONG thread_input) {
-    while(true) {
-        
+    while(true) {  
         if(!GPIOPinRead(GPIO_PORTJ_BASE, GPIO_PIN_0)) {
             if(!vehicle_started) {
-                SendVehicleCommand("A10;");
+                SendVehicleCommand("A5;");
                 tx_thread_sleep(100);
                 SendVehicleCommand("A0;");
                 vehicle_started = true;
@@ -150,12 +151,8 @@ void StartButtonThreadEntry(ULONG thread_input) {
 
 void ReadingThreadEntry(ULONG thread_input) {
     char bufRf[16] = {0};
-    char bufUltrasound[16] = {0};
-    char bufLaser[16] = {0};
-
     while (true) {
         float rfReading = GetSensorReading("rf", bufRf); // faz a leitura do sensor de RF
-
         if (tx_mutex_get(&sensorData_mutex, TX_WAIT_FOREVER) != TX_SUCCESS) {
             break;
         }
@@ -165,7 +162,7 @@ void ReadingThreadEntry(ULONG thread_input) {
         if (tx_mutex_put(&sensorData_mutex) != TX_SUCCESS) {
             break;
         }
-        tx_thread_sleep(10);
+        // tx_thread_sleep(5);
     }
 }
 
@@ -186,23 +183,26 @@ void WriteToUARTEntry(ULONG thread_input) {
         int count = sprintf(commandBuf, "V%f;", turnAngle);
 
         commandBuf[count] = '\0';
-        // if(vehicle_started) {
-            SendVehicleCommand(commandBuf);
-        // }
-
+        
+        SendVehicleCommand(commandBuf);
+        
         tx_thread_sleep(10);
     }
 }
 
 void ControlThreadEntry(ULONG thread_input) {
-    // SendVehicleCommand("A5;");
-    // tx_thread_sleep(100);
-    // SendVehicleCommand("A0;");
     while (true) {
         if (tx_mutex_get(&sensorData_mutex, TX_WAIT_FOREVER) != TX_SUCCESS) {
             break;
         }
-        float turnAngle = -0.3 * sensorData.pRf;
+        float turnAngle = 0.0;
+        float rfTemp = sensorData.pRf > 0 ? (sensorData.pRf*-1) : sensorData.pRf;
+        if (rfTemp > 0.5 && rfTemp < 3) {
+            turnAngle = sensorData.pRf *2*(-1);
+        } else {
+            turnAngle = -0.3 * sensorData.pRf;
+        }
+        
 
         if (tx_mutex_put(&sensorData_mutex) != TX_SUCCESS) {
             break;
@@ -219,8 +219,4 @@ void ControlThreadEntry(ULONG thread_input) {
         }
         tx_thread_sleep(10);
     }
-}
-
-float handleSensorData() {
-    return 0;
 }

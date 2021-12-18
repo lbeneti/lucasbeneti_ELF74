@@ -2,7 +2,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
-// #include <iostream>
 #include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
 #include "driverlib/debug.h"
@@ -52,7 +51,7 @@ void WriteToUARTEntry(ULONG);
 void ControlThreadEntry(ULONG);
 void SendVehicleCommand(char *command);
 void StartButtonThreadEntry(ULONG);
-float GetSensorReading(char *sensor, char *buf);
+float GetSensorReading(char *sensor);
 
 float HandleCollision(SensorData);
 
@@ -60,7 +59,7 @@ int main() {
     // configura o clock para 120MHz
     g_ui32SysClock = SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ | SYSCTL_OSC_MAIN | SYSCTL_USE_PLL | SYSCTL_CFG_VCO_240), 120000000);
 
-    // ****** configuracoes da porta UART que utilizaremos ******   
+    // Habilitando perifericos que serao utilizados
     SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOJ);
@@ -76,8 +75,8 @@ int main() {
 
     GPIOPinTypeGPIOInput(GPIO_PORTJ_BASE, GPIO_PIN_0); // setting PIN_0 as input
     GPIOPadConfigSet(GPIO_PORTJ_BASE, GPIO_PIN_0, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU); // button config
-    GPIOPinTypeGPIOInput(GPIO_PORTJ_BASE, GPIO_PIN_1); // setting PIN_0 as input
-    GPIOPadConfigSet(GPIO_PORTJ_BASE, GPIO_PIN_1, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU); // button config
+    // GPIOPinTypeGPIOInput(GPIO_PORTJ_BASE, GPIO_PIN_1); // setting PIN_0 as input
+    // GPIOPadConfigSet(GPIO_PORTJ_BASE, GPIO_PIN_1, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU); // button config
 
     // seta a porta UART que usaremos pra baud rate de 115200Hz 
     UARTConfigSetExpClk(UART0_BASE, g_ui32SysClock, 115200, (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
@@ -115,13 +114,13 @@ void SendVehicleCommand(char *command) {
     }
 }
 
-float GetSensorReading(char *sensor, char *buf) {
-    // UARTCharPut(UART0_BASE, 'P');
+float GetSensorReading(char *sensor) {
+    char buf[16];
     for (uint8_t i = 0; i < strlen(sensor); i++) {
         UARTCharPut(UART0_BASE, sensor[i]);
     }
     UARTCharPut(UART0_BASE, ';');
-    tx_thread_sleep(10);
+    tx_thread_sleep(5);
 
     uint8_t i = 0;
     while (UARTCharsAvail(UART0_BASE)) {
@@ -150,9 +149,8 @@ void StartButtonThreadEntry(ULONG thread_input) {
 }
 
 void ReadingThreadEntry(ULONG thread_input) {
-    char bufRf[16] = {0};
     while (true) {
-        float rfReading = GetSensorReading("Prf", bufRf); // faz a leitura do sensor de RF
+        float rfReading = GetSensorReading("Prf"); // faz a leitura do sensor de RF
         if (tx_mutex_get(&sensorData_mutex, TX_WAIT_FOREVER) != TX_SUCCESS) {
             break;
         }
@@ -162,7 +160,7 @@ void ReadingThreadEntry(ULONG thread_input) {
         if (tx_mutex_put(&sensorData_mutex) != TX_SUCCESS) {
             break;
         }
-        // tx_thread_sleep(5);
+        tx_thread_sleep(5);
     }
 }
 
@@ -196,13 +194,13 @@ void ControlThreadEntry(ULONG thread_input) {
             break;
         }
         float turnAngle = 0.0;
-        if(vehicle_started) {
-            float rfTemp = sensorData.pRf > 0 ? sensorData.pRf : (sensorData.pRf*-1);
-            if (rfTemp > 1.5 && rfTemp < 3) {
-                turnAngle = sensorData.pRf *10*(-1);
-            } else {
-                turnAngle = -0.3 * sensorData.pRf;
+        float multiplier = 0.2;
+        if (vehicle_started) {
+            float modulo_rf = sensorData.pRf > 0.0 ? sensorData.pRf : (-1*sensorData.pRf) ;
+            if(modulo_rf >= 0.0 && modulo_rf < 1.5) {
+                multiplier = 0.0;
             }
+            turnAngle = -sensorData.pRf * multiplier;        
         }        
 
         if (tx_mutex_put(&sensorData_mutex) != TX_SUCCESS) {
@@ -218,6 +216,6 @@ void ControlThreadEntry(ULONG thread_input) {
         if (tx_mutex_put(&vehicle_mutex) != TX_SUCCESS) {
             break;
         }
-        tx_thread_sleep(10);
+        tx_thread_sleep(5);
     }
 }
